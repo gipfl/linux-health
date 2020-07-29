@@ -56,44 +56,4 @@ class Cpu
 
         return $cpus;
     }
-
-    public function getInfluxDbString($performance = null)
-    {
-        if ($performance === null) {
-            $performance = $this->getPerformance();
-        }
-
-        // TODO:
-        // ctxt 891299797    -> The number of context switches that the system underwent
-        // btime 1540828526  -> boot   time,  in  seconds  since  the  Epoch
-        // processes 2079015 -> Number of forks since boot
-        // procs_running 6   -> Number of processes in  runnable  state
-        // procs_blocked 0   -> Number  of processes blocked waiting for I/O to complete
-
-        return $this->makeBulkCpuString($performance);
-    }
-
-    protected function makeCpuLine($key, $cpu)
-    {
-        $line = $this->getHostName() . "!$key";
-        ksort($cpu);
-        foreach ($cpu as $name => $value) {
-            $line .= " $name=${value}c";
-        }
-
-        $line .= ' ' . time();
-
-        return $line;
-    }
-
-    protected function makeBulkCpuString($cpus)
-    {
-        $lines = [];
-
-        foreach ($cpus as $name => $cpu) {
-            $lines[] = $this->makeCpuLine($name, $cpu);
-        }
-
-        return implode("\n", $lines) . "\n";
-    }
 }
