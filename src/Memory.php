@@ -15,6 +15,9 @@ class Memory
         }
 
         $pageSize = static::getPageSize();
+        if ($pageSize === null) {
+            return false;
+        }
         $parts = explode(' ', $content);
 
         return (object) [
@@ -30,7 +33,10 @@ class Memory
     public static function getPageSize()
     {
         if (self::$pageSize === null) {
-            self::$pageSize = (int) trim(`getconf PAGESIZE`);
+            $output = trim(`getconf PAGESIZE 2>&1`);
+            if (strlen($output)) {
+                self::$pageSize = (int) $output;
+            }
         }
 
         return self::$pageSize;
